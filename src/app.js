@@ -6,10 +6,8 @@ const app = express();
 const notification = require('./notification');
 const {json} = require("express");
 const bodyParser = require('body-parser')
-app.use(express.json());
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-    extended: true
-}));
+app.use(express.text());
+
 
 
 app.get('/start', async (request, response) => {
@@ -19,10 +17,8 @@ app.get('/start', async (request, response) => {
 
 app.post('/start', async (request, response) => {
 
-    console.log('Got headers:', JSON.stringify( request.headers,null,4));
-
-    console.log('Got body:', JSON.stringify(request.body,null,4));
-    return response.send('post');
+    console.log(request.body);
+    return response.send('Finish');
 });
 
 
