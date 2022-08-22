@@ -5,9 +5,7 @@ const path = require('path');
 const app = express();
 const notification = require('./notification');
 const {json} = require("express");
-const bodyParser = require('body-parser')
-app.use(express.text());
-
+app.use(express.json());
 
 
 app.get('/start', async (request, response) => {
@@ -15,11 +13,14 @@ app.get('/start', async (request, response) => {
     return response.send('Finish');
 });
 
-app.post('/start', async (request, response) => {
-
-    console.log(request.body);
-    return response.send('Finish');
-});
+// app.post('/start', async (request, response) => {
+//
+//     const p =  bodyParser.text();
+//     console.log('Got headers:', JSON.stringify( request.headers,null,4));
+//
+//     console.log('Got body:', JSON.stringify(request.body,null,4));
+//     return response.send('post');
+// });
 
 
 app.get('/ping', async (request, response) => {
