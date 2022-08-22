@@ -5,7 +5,11 @@ const path = require('path');
 const app = express();
 const notification = require('./notification');
 const {json} = require("express");
+const bodyParser = require('body-parser')
 app.use(express.json());
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+    extended: true
+}));
 
 
 app.get('/start', async (request, response) => {
@@ -14,7 +18,9 @@ app.get('/start', async (request, response) => {
 });
 
 app.post('/start', async (request, response) => {
-    console.dir('Got body:', request.body);
+
+
+    console.log('Got body:', JSON.stringify(request.body,null,4));
     return response.send('post');
 });
 
