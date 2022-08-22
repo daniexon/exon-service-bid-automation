@@ -4,11 +4,20 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const notification = require('./notification');
+const {json} = require("express");
+app.use(express.json());
+
 
 app.get('/start', async (request, response) => {
     await init();
     return response.send('Finish');
 });
+
+app.post('/start', async (request, response) => {
+    console.dir('Got body:', request.body);
+    return response.send('post');
+});
+
 
 app.get('/ping', async (request, response) => {
     return response.send('PONG');
