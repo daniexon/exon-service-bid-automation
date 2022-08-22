@@ -7,6 +7,10 @@ const notification = require('./notification');
 const {json} = require("express");
 app.use(express.json());
 
+app.post('/start', async (request, response) => {
+    await init();
+    return response.send('Finish');
+});
 
 app.get('/start', async (request, response) => {
     await init();
