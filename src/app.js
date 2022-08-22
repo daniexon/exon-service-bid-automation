@@ -19,7 +19,6 @@ app.get('/start', async (request, response) => {
 
 app.post('/start', async (request, response) => {
 
-
     console.log('Got body:', JSON.stringify(request.body,null,4));
     return response.send('post');
 });
