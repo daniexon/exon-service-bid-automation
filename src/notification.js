@@ -4,7 +4,10 @@ const AWS = require('aws-sdk');
 const { IncomingWebhook } = require('@slack/webhook');
 
 
-const notification = async (automationResult) => {
+const notification = async (a) => {
+    let automationResult = a.result;
+    let runRateTime = a.runRateTime;
+
     const createCSV = async () => {
         return new Promise((res, rej) => {
             converter.json2csv(automationResult, (err, csv) => {
@@ -37,6 +40,7 @@ const notification = async (automationResult) => {
 
     }
     const init = async () => {
+
         if (!automationResult || !isArray(automationResult)) {
             console.log('not found any notification')
             return;
@@ -49,7 +53,7 @@ const notification = async (automationResult) => {
 
         try {
             //build message on slack
-            let sb = 'Bid Automation Recommendations -' + new Date().toLocaleString() + ' : \n';
+            let sb = `Bid Automation Recommendations - ${runRateTime} UTC\n`;
             automationResult.filter(x => x.priority >= 4).map(item => {
                 sb += `${item.message.indexOf('open') === 0 ? ':white_check_mark: ' : item.message.indexOf('close') === 0 ? ':x: ' : ''}${item.domain} -> ${item.message}\n`;
             });
@@ -62,7 +66,7 @@ const notification = async (automationResult) => {
         try {
             //create file
             const link = await uploadCSV(csv);
-            const message = 'Bid Automation Recommendation Details ' + new Date().toLocaleString()
+            const message = `Bid Automation Recommendation Details - ${runRateTime} UTC`;
             const msg = `:file_cabinet: <${link}|${(message == "" ? link : message)}>`;
             await sendMessageToSlack(msg)
         }catch (ex){

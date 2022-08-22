@@ -7,6 +7,7 @@ const _ = require('lodash');
 const automationModule = () => {
     let results = [];
     let runRateData = null;
+    let currentTime = '';
     const addDomainResult = (domain, message, priority) => {
         results.push({domain, message, priority});
     }
@@ -45,6 +46,7 @@ const automationModule = () => {
         }
 
 
+
         const yesterday = moment().utc().add(-1, 'days');
         const today = moment().utc();
 
@@ -57,10 +59,18 @@ const automationModule = () => {
             Prefix: `production/bi/reports/roi-hourly/year=${today.year()}/month=${(today.month() + 1 + '').padStart(2, '0')}/day=${(today.date() + '').padStart(2, '0')}`,
         }
         let arrayOfFiles = await getFilesPath(optionsToday);
+
+
         if (arrayOfFiles.length < NUMBER_OF_HOURS) {
             let yesterdayArrayOfFiles = await getFilesPath(optionsYesterday);
             arrayOfFiles = yesterdayArrayOfFiles.slice(-1 * (NUMBER_OF_HOURS - arrayOfFiles.length)).concat(arrayOfFiles);
         }
+
+        arrayOfFiles =  _.orderBy(arrayOfFiles,[],['desc']);
+        //set time
+        let allDatePart=    _.first(arrayOfFiles).split('/').filter(x=>x.includes('=')).map(x=>x.split('=')[1]).join('-');
+       currentTime =  _.take(allDatePart.split('-'),3).join('-') + ' ' + _.slice(allDatePart.split('-'),3).join(':');
+
 
         //get all runRate data
         const data = await Promise.all(arrayOfFiles.map(x => downloadStringFromS3('exon-media', x)));
@@ -135,7 +145,7 @@ const automationModule = () => {
         //notification
         results =  _.orderBy(results, ['priority', 'domain'], ['desc', 'asc']);
 
-        return results;
+        return {runRateTime:currentTime,result:results};
 
     };
 
