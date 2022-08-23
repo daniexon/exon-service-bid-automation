@@ -80,7 +80,9 @@ const automationModule = () => {
     }
     const automateDomain = async (row) => {
         const {id, kpi, timeZone} = row;
-        const getTrend = (roiData) => {
+        const getTrend = (roiDataOrderByDesc) => {
+           let roiData=roiDataOrderByDesc.reverse();
+
             let trendCode = 0; // -1 down, 0 nothing, 1 up
             for (let i = 1; i < roiData.length; i++) {
                 if (roiData[i - 1] == roiData[i]) return 0; //nothing to do, its same value
@@ -97,13 +99,13 @@ const automationModule = () => {
         }
         const increaseTrending = (data) =>
         {
-            let daily = _.last(data).ROI;
+            let daily = _.first(data).ROI;
             if (daily>=kpi+10) addDomainResult(id, 'open', 4);
             else if (kpi+10 > daily && daily>=kpi) addDomainResult(id, 'do nothing', 3);
             else if (daily<kpi) addDomainResult(id, 'close', 4);
         }
         const decreaseTrending = (data) => {
-            let daily = _.last(data).ROI;
+            let daily = _.first(data).ROI;
             if (kpi+20 > daily && daily>kpi+10) addDomainResult(id, 'do nothing, alert:"daily ROI decreases, keep tracking, might need to open"', 5);
             else if (daily > kpi+20) addDomainResult(id, 'open, alert:"high daily ROI, but keep in mind daily ROI decreases"', 5);
             else if (kpi<daily && daily<=kpi+10) addDomainResult(id, 'close', 4);
@@ -133,7 +135,9 @@ const automationModule = () => {
 
         //get all configuration
         let domainsConfigurationArray = await configuration.get();
-        //domainsConfigurationArray = domainsConfigurationArray.filter(x=>x.id=='5-top.co.uk')
+        //domainsConfigurationArray = domainsConfigurationArray.filter(x=>x.id=='tieferepreise.de')
+
+
         for (let row of domainsConfigurationArray) {
             const {id, kpi, timeZone} = row;
             console.log('Handle:', id, kpi, timeZone)
